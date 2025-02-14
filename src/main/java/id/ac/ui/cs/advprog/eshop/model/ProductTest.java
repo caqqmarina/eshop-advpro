@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*; class ProductTest {
 	@Test
 	void testGetProductId() {
 
-	assertEquals( expected: "eb558e9f-1c39-460e-8860-71af6af63bd6", this.product.getProductId());
+	assertEquted: "eb558e9f-1c39-460e-8860-71af6af63bd6", this.product.getProductId());
 	}
 
 	@Test
