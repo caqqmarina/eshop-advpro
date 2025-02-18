@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class ProductRepository Test {
+class ProductRepositoryTest {
 
 	@InjectMocks
 	ProductRepository productRepository;
@@ -40,13 +40,13 @@ class ProductRepository Test {
 
 	@Test
 	void testFindAllIfEmpty() {
-	Iterator<Product> productIterator = productRepository.findALL();
-	assertFalse (productIterator.hasNext());
+	    Iterator<Product> productIterator = productRepository.findAll(); // not findALL
+	    assertFalse(productIterator.hasNext());
 	}
 
 	
 	@Test
-	void testFindAllIfMore Than OneProduct() {
+	void testFindAllIfMoreThanOneProduct() {
 
 		Product product1 = new Product();
 		product1.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6"); product1.setProductName("Sampo Cap Bambang");
@@ -62,9 +62,8 @@ class ProductRepository Test {
 		assertTrue(productIterator.hasNext());
 		Product savedProduct = productIterator.next();
 		assertEquals(product1.getProductId(), savedProduct.getProductId());
-		savedProduct productIterator.next();
+		savedProduct = productIterator.next();
 		assertEquals(product2.getProductId(), savedProduct.getProductId());
 		assertFalse (productIterator.hasNext());
 	}
 }
-
