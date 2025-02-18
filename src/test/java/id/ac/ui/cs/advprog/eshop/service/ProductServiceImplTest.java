@@ -55,6 +55,20 @@ class ProductServiceImplTest {
     }
 
     @Test
+    void testFindAll_EmptyList() {
+        when(productRepository.findAll()).thenReturn(Collections.emptyIterator());
+        List<Product> result = productService.findAll();
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testFindById_NotFound() {
+        when(productRepository.findById("non-existent")).thenReturn(null);
+        Product result = productService.findById("non-existent");
+        assertNull(result);
+    }
+
+    @Test
     void testUpdateProduct_Success() {
         Product updatedProduct = new Product();
         updatedProduct.setProductId("test-id");
@@ -66,8 +80,26 @@ class ProductServiceImplTest {
     }
 
     @Test
+    void testUpdate_ProductNotFound() {
+        Product nonExistentProduct = new Product();
+        nonExistentProduct.setProductId("non-existent");
+        
+
+        productService.update(nonExistentProduct);
+        
+        verify(productRepository).update(nonExistentProduct);
+    }
+
+    @Test
     void testDeleteProduct_Success() {
         productService.delete("test-id");
         verify(productRepository).delete("test-id");
+    }
+
+    @Test
+    void testDelete_ProductNotFound() {
+        doNothing().when(productRepository).delete("non-existent");
+        productService.delete("non-existent");
+        verify(productRepository).delete("non-existent");
     }
 }

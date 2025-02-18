@@ -70,4 +70,35 @@ class ProductRepositoryTest {
         productRepository.delete(product.getProductId());
         assertNull(productRepository.findById(product.getProductId()));
     }
+
+    @Test
+    void testFindAll_EmptyRepository() {
+        Iterator<Product> iterator = productRepository.findAll();
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    void testFindAll_MultipleProducts() {
+        Product product1 = new Product();
+        product1.setProductId("1");
+        Product product2 = new Product();
+        product2.setProductId("2");
+        
+        productRepository.create(product1);
+        productRepository.create(product2);
+        
+        Iterator<Product> iterator = productRepository.findAll();
+        int count = 0;
+        while(iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        assertEquals(2, count);
+    }
+
+    @Test
+    void testDelete_ProductNotFound() {
+        productRepository.delete("non-existent");
+        // Should not throw exception
+    }
 }
