@@ -102,4 +102,12 @@ class ProductControllerTest {
 
         verify(service).update(any(Product.class));
     }
+
+    @Test
+    void createProductPage_Success() throws Exception {
+        mockMvc.perform(get("/product/create"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("createProduct"))
+                .andExpect(model().attributeExists("product"));
+    }
 }

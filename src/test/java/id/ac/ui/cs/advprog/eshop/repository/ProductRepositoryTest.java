@@ -65,6 +65,42 @@ class ProductRepositoryTest {
     }
 
     @Test
+    void testUpdate_ProductExists() {
+        // First branch: Product with ID exists
+        productRepository.create(product);
+        
+        Product updated = new Product();
+        updated.setProductId(product.getProductId());
+        updated.setProductName("Updated Name");
+        updated.setProductQuantity(20);
+        
+        productRepository.update(updated);
+        
+        Product found = productRepository.findById(product.getProductId());
+        assertEquals("Updated Name", found.getProductName());
+        assertEquals(20, found.getProductQuantity());
+    }
+
+    @Test
+    void testUpdate_ProductDoesNotExist() {
+        // Second branch: Product with ID doesn't exist
+        Product existingProduct = new Product();
+        existingProduct.setProductId("existing-id");
+        existingProduct.setProductName("Original");
+        productRepository.create(existingProduct);
+        
+        Product nonExistingProduct = new Product();
+        nonExistingProduct.setProductId("non-existing-id");
+        nonExistingProduct.setProductName("New Product");
+        
+        productRepository.update(nonExistingProduct);
+        
+        // Verify original product wasn't changed
+        Product found = productRepository.findById("existing-id");
+        assertEquals("Original", found.getProductName());
+    }
+
+    @Test
     void testDelete_Success() {
         productRepository.create(product);
         productRepository.delete(product.getProductId());
