@@ -1,20 +1,19 @@
-name: SonarCloud
+name: SonarCloud Code Scan and Analysis
 
 on:
   push:
     branches:
-      - main
-      - module-2-exercise
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
 
 jobs:
   sonarcloud:
-    name: SonarCloud
+    name: SonarCloud Scan
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -31,23 +30,19 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          ./gradlew build jacocoTestReport sonarqube \
-            -Dsonar.projectKey=caqqmarina_eshop-advpro \
-            -Dsonar.organization=coklat007 \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml \
-            -Dsonar.gradle.skipCompile=true \
-            -Dsonar.scm.provider=git \
-            -Dsonar.sourceEncoding=UTF-8 \
-            -Dsonar.java.source=21 \
-            -Dsonar.exclusions=**/*.html \
-            -Dsonar.analysis.mode=publish \
-            -Dsonar.qualitygate.wait=true \
-            -Dsonar.alm.enabled=false \
-            --info
+      - name: Add gradlew permission
+        run: chmod +x gradlew
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: Build and Analyze with SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run:
+          ./gradlew build sonar --info
+        
