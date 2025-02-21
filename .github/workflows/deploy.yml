@@ -16,9 +16,10 @@ jobs:
           tar xvf koyeb.tar.gz
           sudo mv koyeb /usr/local/bin/
           
-      - name: Login to Koyeb
+      - name: Configure Koyeb
         run: |
-          koyeb login --token ${{ secrets.KOYEB_TOKEN }}
+          mkdir -p ~/.koyeb
+          echo "token: ${{ secrets.KOYEB_TOKEN }}" > ~/.koyeb/config.yaml
           
       - name: Build and Deploy to Koyeb
         run: |
