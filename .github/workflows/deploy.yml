@@ -18,8 +18,7 @@ jobs:
           
       - name: Configure Koyeb
         run: |
-          mkdir -p ~/.koyeb
-          echo "token: ${{ secrets.KOYEB_TOKEN }}" > ~/.koyeb/config.yaml
+          echo "token: ${{ secrets.KOYEB_TOKEN }}" > ~/.koyeb.yaml
           
       - name: Build and Deploy to Koyeb
         run: |
