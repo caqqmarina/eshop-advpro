@@ -42,6 +42,13 @@ jobs:
 
       - name: Build and Analyze with SonarCloud
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run:
-          ./gradlew build sonar --info
+        run: |
+          ./gradlew build jacocoTestReport sonarqube \
+            -Dsonar.projectKey=caqqmarina_eshop-advpro \
+            -Dsonar.organization=coklat007 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml \
+            --info
+
