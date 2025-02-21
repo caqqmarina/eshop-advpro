@@ -50,5 +50,12 @@ jobs:
             -Dsonar.organization=coklat007 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml \
+            -Dsonar.gradle.skipCompile=true \
+            -Dsonar.scm.provider=git \
+            -Dsonar.sourceEncoding=UTF-8 \
+            -Dsonar.java.source=21 \
+            -Dsonar.exclusions=**/*.html \
+            -Dsonar.analysis.mode=publish \
+            -Dsonar.qualitygate.wait=true \
             --info
 
