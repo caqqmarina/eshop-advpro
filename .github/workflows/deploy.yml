@@ -30,5 +30,5 @@ jobs:
             --ports 8080:http \
             --routes /:8080 \
             --env PORT=8080 \
-            --instance-type nano \
+            --instance-type free-xs \
             --token ${{ secrets.KOYEB_TOKEN }}
