@@ -1,0 +1,30 @@
+name: Deploy to Koyeb via API
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Koyeb
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build Docker Image
+        run: docker build -t eshop-app .
+
+      - name: Deploy to Koyeb via API
+        env:
+          KOYEB_API_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
+          KOYEB_SERVICE_ID: 3fd615be-d359-4cca-9dea-b4209aabaaf7
+        run: |
+          curl -X POST "https://app.koyeb.com/v1/services/$KOYEB_SERVICE_ID/redeploy" \
+               -H "Authorization: Bearer $KOYEB_API_TOKEN" \
+               -H "Content-Type: application/json"
