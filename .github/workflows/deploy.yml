@@ -22,10 +22,13 @@ jobs:
           
       - name: Build and Deploy to Koyeb
         run: |
+          koyeb app create eshop-advpro-app || echo "App already exists"
           koyeb service create eshop-advpro \
+            --app eshop-advpro-app \
             --git github.com/${{ github.repository }} \
             --git-branch main \
             --ports 8080:http \
             --routes /:8080 \
             --env PORT=8080 \
-            --instance-type nano
+            --instance-type nano \
+            --token ${{ secrets.KOYEB_TOKEN }}
