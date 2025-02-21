@@ -1,3 +1,6 @@
+
+# Module 1 Reflections
+
 ## Reflection 1
 
 ### Applied Principles
@@ -84,3 +87,38 @@ How do i feel in this reflection? defeated :(
 2. Tests should be treated with the same code quality standards as production code
 3. Regular refactoring of test code is important to maintain cleanliness
 4. A good balance between unit and functional tests helps ensure application quality
+
+# Module 2 Reflections 
+
+## Reflection
+
+### Code Quality Issues and Fixes
+
+1. **SonarCloud Analysis Issues**
+   - Implemented proper test coverage for CRUD operations in [`ProductRepositoryTest`](src/test/java/id/ac/ui/cs/advprog/eshop/repository/ProductRepositoryTest.java)
+   - Added comprehensive test cases including positive and negative scenarios
+   - Fixed code duplication in functional tests by following the suggested base test class pattern
+
+2. **Docker Build Configuration**
+   - Fixed permission issues with gradlew execution by adding `RUN chmod +x gradlew` in [Dockerfile](Dockerfile)
+   - Implemented proper multi-stage build to reduce final image size
+   - Configured correct working directory and file paths for the build process
+
+### CI/CD Implementation Analysis
+
+The current implementation meets the definition of CI/CD for the following reasons:
+
+1. **Continuous Integration**
+   - Automated test execution through GitHub Actions workflow in [sonarcloud.yml](.github/workflows/sonarcloud.yml)
+   - Code quality checks using SonarCloud analysis
+   - Immediate feedback on code quality and test results after each push
+
+2. **Continuous Deployment**
+   - Automated deployment to Koyeb PaaS platform
+   - Docker container build and deployment on successful CI checks
+   - Zero-touch deployment process from commit to production
+
+3. **Quality Gates**
+   - Code analysis through [scorecard.yml](.github/workflows/scorecard.yml) for security checks
+   - Unit and functional tests run before deployment
+   - Automated quality checks ensure only verified code reaches production
