@@ -122,3 +122,56 @@ The current implementation meets the definition of CI/CD for the following reaso
    - Code analysis through [scorecard.yml](.github/workflows/scorecard.yml) for security checks
    - Unit and functional tests run before deployment
    - Automated quality checks ensure only verified code reaches production
+
+# Module 3 Reflections
+
+## 1) Principles Applied to the Project
+
+- **Single Responsibility Principle (SRP):**  
+  Each class in the project has one well-defined responsibility. For example, our controllers (e.g. [`ProductController`](src/main/java/id/ac/ui/cs/advprog/eshop/controller/ProductController.java)) only handle incoming HTTP requests and delegate business logic to services, while repositories (e.g. [`ProductRepository`](src/main/java/id/ac/ui/cs/advprog/eshop/repository/ProductRepository.java)) are solely responsible for data access.
+
+- **Open/Closed Principle (OCP):**  
+  The design is open for extension but closed for modification. Service interfaces (such as [`ProductService`](src/main/java/id/ac/ui/cs/advprog/eshop/service/ProductService.java)) allow us to introduce new implementations without altering the existing tested code.
+
+- **Liskov Substitution Principle (LSP):**  
+  Although not fully implemented yet, our models for different domain objects (e.g. Product and Car) can be refactored to implement a common interface. This will allow any instance of a subclass (or implementing type) to replace an instance of a base type without affecting program correctness.
+
+- **Interface Segregation Principle (ISP):**  
+  Our service interfaces are focused and concise. For example, [`ProductService`](src/main/java/id/ac/ui/cs/advprog/eshop/service/ProductService.java) only contains the methods needed for product operations, keeping clients from being forced to depend on unused functionality.
+
+- **Dependency Inversion Principle (DIP):**  
+  High-level modules (like controllers) depend on abstractions rather than on concrete implementations. Spring’s dependency injection (using `@Autowired`) ensures that controllers depend on service interfaces, which makes the application more decoupled and testable.
+
+## 2) Advantages of Applying SOLID Principles
+
+- **Enhanced Maintainability:**  
+  When, for example, the database implementation requires a change, only the repository layer needs modification. The controllers and services remain untouched because each layer has its own responsibility.
+  ```java
+  @Repository
+  public class ProductRepository { ... }
+
+- **Improved Testability**
+  Dependency injection and the use of interfaces make it simple to mock or stub dependencies during unit tests.
+  ```java
+  @ExtendWith(MockitoExtension.class)
+   class ProductServiceImplTest {
+      @Mock
+      private ProductRepository productRepository;
+      
+      @InjectMocks
+      private ProductServiceImpl productService;
+      
+      // Testing can focus solely on business logic without needing a real repository implementation.
+   }
+
+-**Flexibility for Extensions**
+  New features, such as adding a new kind of product or service, can be introduced by creating new classes that extend the existing abstractions. The overall system architecture remains robust because existing code need not be changed.
+
+## 3) Disadvantages of Not Applying SOLID Principles
+
+- **Code Duplication and Rigidity:**
+  Without proper abstractions, similar logic often gets duplicated. For example, if both ProductRepository and CarRepository were implemented without a common abstraction, changes such as bug fixes would need to be applied in multiple places.
+
+- **Inflexible Architecture:**
+  Failing to adhere to OCP means that even small changes (like adding a new product type) force modifications in existing methods. This can introduce bugs and make it harder to scale the application over time.
+
