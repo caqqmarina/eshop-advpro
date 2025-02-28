@@ -67,7 +67,7 @@ class CarController extends ProductController{
     @Autowired
     private CarServiceImpl carservice;
 
-    @GetMapping(@"/createCar")
+    @GetMapping("/createCar")
     public String createCarPage (Model model) {
 
         Car car = new Car();
@@ -99,7 +99,7 @@ class CarController extends ProductController{
     }
     
 
-    @PostMapping(@"/editCar")
+    @PostMapping("/editCar")
     public String editCarPost (@ModelAttribute Car car, Model model) {
         System.out.println(car.getCarId());
         carservice.update(car.getCarId(), car);
@@ -107,7 +107,7 @@ class CarController extends ProductController{
         return "redirect:listCar";
     }
 
-    @PostMapping(@"/deleteCar")
+    @PostMapping("/deleteCar")
     public String deleteCar (@RequestParam("carId") String carId) {
     carservice.deleteCarById(carId);
     return "redirect:listCar";
