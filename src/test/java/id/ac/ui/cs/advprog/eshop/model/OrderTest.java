@@ -1,12 +1,15 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
 
 class OrderTest {
 
@@ -67,10 +70,10 @@ class OrderTest {
                 this.products,
                 1708560000L,
                 "Safira Sudrajat",
-                "SUCCESS"
+                OrderStatus.SUCCESS.getValue()
         );
 
-        assertEquals("SUCCESS", order.getStatus());
+        assertEquals(OrderStatus.SUCCESS.getValue(), order.getStatus());
     }
 
     @Test
