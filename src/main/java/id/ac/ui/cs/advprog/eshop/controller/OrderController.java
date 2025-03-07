@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,35 @@ public class OrderController {
         List<Product> products = productService.findAll();
         model.addAttribute("products", products);
         return "createOrder";
+    }
+
+    @PostMapping("/create")
+    public String createOrderPost(@RequestParam List<String> productIds, 
+                                 @RequestParam String author, 
+                                 Model model) {
+        List<Product> selectedProducts = new ArrayList<>();
+        for (String productId : productIds) {
+            Product product = productService.findById(productId);
+            if (product != null) {
+                selectedProducts.add(product);
+            }
+        }
+        
+        if (selectedProducts.isEmpty()) {
+            // Handle error - no products selected
+            return "redirect:/order/create";
+        }
+        
+        Order order = new Order(
+            UUID.randomUUID().toString(),
+            selectedProducts,
+            System.currentTimeMillis(),
+            author
+        );
+        
+        order = orderService.createOrder(order);
+        
+        return "redirect:/order/history?authorName=" + author;
     }
 
     @GetMapping("/history")
