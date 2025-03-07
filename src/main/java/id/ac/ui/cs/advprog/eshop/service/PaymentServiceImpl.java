@@ -88,7 +88,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
     
     private String validateBankTransfer(Map<String, String> paymentData) {
-        // Extract bank transfer validation to a dedicated method for better testability
         return isBankTransferValid(paymentData) ? SUCCESS_STATUS : REJECTED_STATUS;
     }
 
