@@ -209,4 +209,28 @@ class PaymentServiceImplTest {
         assertEquals(2, result.size());
         verify(paymentRepository).findAll();
     }
+
+    @Test
+    void testAddPayment_BankTransfer_Rejected_NullBankName() {
+        Map<String, String> nullBankNameData = new HashMap<>();
+        nullBankNameData.put("referenceCode", "REF123456");
+        
+        Payment result = paymentService.addPayment(order, "Bank Transfer", nullBankNameData);
+        
+        assertEquals("REJECTED", result.getStatus());
+        verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
+        verify(paymentRepository).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPayment_BankTransfer_Rejected_NullReferenceCode() {
+        Map<String, String> nullReferenceData = new HashMap<>();
+        nullReferenceData.put("bankName", "BCA");
+        
+        Payment result = paymentService.addPayment(order, "Bank Transfer", nullReferenceData);
+        
+        assertEquals("REJECTED", result.getStatus());
+        verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
+        verify(paymentRepository).save(any(Payment.class));
+    }
 }
