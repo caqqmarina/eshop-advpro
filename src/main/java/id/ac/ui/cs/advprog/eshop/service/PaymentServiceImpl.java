@@ -12,6 +12,19 @@ import java.util.*;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+    private static final String SUCCESS_STATUS = "SUCCESS";
+    private static final String REJECTED_STATUS = "REJECTED";
+    private static final String BANK_TRANSFER_METHOD = "Bank Transfer";
+    private static final String VOUCHER_METHOD = "Voucher";
+    
+    private static final String BANK_NAME_KEY = "bankName";
+    private static final String REFERENCE_CODE_KEY = "referenceCode";
+    private static final String VOUCHER_CODE_KEY = "voucherCode";
+    
+    private static final String VOUCHER_PREFIX = "ESHOP";
+    private static final int VOUCHER_CODE_LENGTH = 16;
+    private static final int REQUIRED_DIGIT_COUNT = 8;
+
     @Autowired
     private PaymentRepository paymentRepository;
     
@@ -20,12 +33,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Payment addPayment(Order order, String method, Map<String, String> paymentData) {
+        validateInputs(order, method, paymentData);
+        
         String paymentId = UUID.randomUUID().toString();
         String status = determinePaymentStatus(method, paymentData);
         
         Payment payment = new Payment(paymentId, method, status, paymentData, order);
         paymentRepository.save(payment);
-
+        
         updateOrderStatus(order.getId(), status);
         
         return payment;
@@ -35,7 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment setStatus(Payment payment, String status) {
         payment.setStatus(status);
         paymentRepository.save(payment);
-
+        
         updateOrderStatus(payment.getOrder().getId(), status);
         
         return payment;
@@ -51,56 +66,70 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.findAll();
     }
     
+    private void validateInputs(Order order, String method, Map<String, String> paymentData) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null");
+        }
+        if (method == null || method.isEmpty()) {
+            throw new IllegalArgumentException("Payment method cannot be null or empty");
+        }
+        if (paymentData == null) {
+            throw new IllegalArgumentException("Payment data cannot be null");
+        }
+    }
+    
     private String determinePaymentStatus(String method, Map<String, String> paymentData) {
-        if ("Bank Transfer".equals(method)) {
+        if (BANK_TRANSFER_METHOD.equals(method)) {
             return validateBankTransfer(paymentData);
-        } else if ("Voucher".equals(method)) {
+        } else if (VOUCHER_METHOD.equals(method)) {
             return validateVoucher(paymentData);
         }
-        return "REJECTED";
+        return REJECTED_STATUS;
     }
     
     private String validateBankTransfer(Map<String, String> paymentData) {
-        String bankName = paymentData.get("bankName");
-        String referenceCode = paymentData.get("referenceCode");
+        String bankName = paymentData.get(BANK_NAME_KEY);
+        String referenceCode = paymentData.get(REFERENCE_CODE_KEY);
         
-        if (bankName == null || bankName.isEmpty() || 
-            referenceCode == null || referenceCode.isEmpty()) {
-            return "REJECTED";
+        if (isNullOrEmpty(bankName) || isNullOrEmpty(referenceCode)) {
+            return REJECTED_STATUS;
         }
         
-        return "SUCCESS";
+        return SUCCESS_STATUS;
     }
     
     private String validateVoucher(Map<String, String> paymentData) {
-        String voucherCode = paymentData.get("voucherCode");
+        String voucherCode = paymentData.get(VOUCHER_CODE_KEY);
         
-        if (voucherCode == null || voucherCode.length() != 16) {
-            return "REJECTED";
+        if (isNullOrEmpty(voucherCode) || voucherCode.length() != VOUCHER_CODE_LENGTH) {
+            return REJECTED_STATUS;
         }
         
-        if (!voucherCode.startsWith("ESHOP")) {
-            return "REJECTED";
+        if (!voucherCode.startsWith(VOUCHER_PREFIX)) {
+            return REJECTED_STATUS;
         }
         
-        int digitCount = 0;
-        for (char c : voucherCode.toCharArray()) {
-            if (Character.isDigit(c)) {
-                digitCount++;
-            }
+        int digitCount = countDigits(voucherCode);
+        
+        if (digitCount != REQUIRED_DIGIT_COUNT) {
+            return REJECTED_STATUS;
         }
         
-        if (digitCount != 8) {
-            return "REJECTED";
-        }
-        
-        return "SUCCESS";
+        return SUCCESS_STATUS;
+    }
+    
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
+    
+    private int countDigits(String str) {
+        return (int) str.chars().filter(Character::isDigit).count();
     }
     
     private void updateOrderStatus(String orderId, String paymentStatus) {
-        if ("SUCCESS".equals(paymentStatus)) {
+        if (SUCCESS_STATUS.equals(paymentStatus)) {
             orderService.updateStatus(orderId, OrderStatus.SUCCESS.getValue());
-        } else if ("REJECTED".equals(paymentStatus)) {
+        } else if (REJECTED_STATUS.equals(paymentStatus)) {
             orderService.updateStatus(orderId, OrderStatus.FAILED.getValue());
         }
     }

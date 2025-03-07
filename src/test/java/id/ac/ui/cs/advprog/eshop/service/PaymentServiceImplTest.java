@@ -41,7 +41,6 @@ class PaymentServiceImplTest {
 
     @BeforeEach
     void setUp() {
-
         List<Product> products = new ArrayList<>();
         Product product = new Product();
         product.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
@@ -65,13 +64,10 @@ class PaymentServiceImplTest {
 
     @Test
     void testAddPayment_BankTransfer_Success() {
-        - set up return values for mocked methods
         when(paymentRepository.save(any(Payment.class))).thenAnswer(i -> i.getArguments()[0]);
         
- - call the method with valid bank transfer data
         Payment result = paymentService.addPayment(order, "Bank Transfer", bankTransferData);
         
-         - verify results
         assertNotNull(result);
         assertEquals("Bank Transfer", result.getMethod());
         assertEquals("SUCCESS", result.getStatus());
@@ -82,12 +78,9 @@ class PaymentServiceImplTest {
 
     @Test
     void testAddPayment_BankTransfer_Rejected_EmptyBankName() {
-
         bankTransferData.put("bankName", "");
         
-
         Payment result = paymentService.addPayment(order, "Bank Transfer", bankTransferData);
-        
         
         assertEquals("REJECTED", result.getStatus());
         verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
@@ -96,9 +89,7 @@ class PaymentServiceImplTest {
     
     @Test
     void testAddPayment_BankTransfer_Rejected_NoReferenceCode() {
-
         Payment result = paymentService.addPayment(order, "Bank Transfer", invalidBankTransferData);
-        
         
         assertEquals("REJECTED", result.getStatus());
         verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
@@ -107,11 +98,9 @@ class PaymentServiceImplTest {
     
     @Test
     void testAddPayment_Voucher_Success() {
-       
-        voucherData.put("voucherCode", "ESHOP12345678AB");
+        voucherData.put("voucherCode", "ESHOP12345678ABC");  // Add an extra character to make it 16 chars
         when(paymentRepository.save(any(Payment.class))).thenAnswer(i -> i.getArguments()[0]);
         
-
         Payment result = paymentService.addPayment(order, "Voucher", voucherData);
 
         assertEquals("SUCCESS", result.getStatus());
@@ -121,7 +110,6 @@ class PaymentServiceImplTest {
     
     @Test
     void testAddPayment_Voucher_Rejected() {
-
         Payment result = paymentService.addPayment(order, "Voucher", invalidVoucherData);
 
         assertEquals("REJECTED", result.getStatus());
@@ -131,7 +119,6 @@ class PaymentServiceImplTest {
     
     @Test
     void testSetStatus_Success() {
-
         Payment payment = new Payment("payment-123", "Bank Transfer", "PENDING", bankTransferData, order);
         when(paymentRepository.save(payment)).thenReturn(payment);
 
@@ -144,7 +131,6 @@ class PaymentServiceImplTest {
     
     @Test
     void testSetStatus_Rejected() {
-
         Payment payment = new Payment("payment-123", "Bank Transfer", "PENDING", bankTransferData, order);
         when(paymentRepository.save(payment)).thenReturn(payment);
 
@@ -157,7 +143,6 @@ class PaymentServiceImplTest {
     
     @Test
     void testGetPayment() {
-
         Payment payment = new Payment("payment-123", "Bank Transfer", "SUCCESS", bankTransferData, order);
         when(paymentRepository.findById("payment-123")).thenReturn(payment);
         
@@ -170,7 +155,6 @@ class PaymentServiceImplTest {
     
     @Test
     void testGetAllPayments() {
-
         List<Payment> payments = new ArrayList<>();
         payments.add(new Payment("payment-123", "Bank Transfer", "SUCCESS", bankTransferData, order));
         payments.add(new Payment("payment-456", "Voucher", "REJECTED", invalidVoucherData, order));
