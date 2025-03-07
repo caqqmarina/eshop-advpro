@@ -98,7 +98,7 @@ class PaymentServiceImplTest {
     
     @Test
     void testAddPayment_Voucher_Success() {
-        voucherData.put("voucherCode", "ESHOP1234ABCD567");  
+        voucherData.put("voucherCode", "ESHOP12345678ABC");  // Exactly 8 digits
         when(paymentRepository.save(any(Payment.class))).thenAnswer(i -> i.getArguments()[0]);
         
         Payment result = paymentService.addPayment(order, "Voucher", voucherData);

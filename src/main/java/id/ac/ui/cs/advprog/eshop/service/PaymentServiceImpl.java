@@ -101,21 +101,25 @@ public class PaymentServiceImpl implements PaymentService {
     private String validateVoucher(Map<String, String> paymentData) {
         String voucherCode = paymentData.get(VOUCHER_CODE_KEY);
         
-        if (isNullOrEmpty(voucherCode) || voucherCode.length() != VOUCHER_CODE_LENGTH) {
-            return REJECTED_STATUS;
-        }
-        
-        if (!voucherCode.startsWith(VOUCHER_PREFIX)) {
-            return REJECTED_STATUS;
-        }
-        
-        int digitCount = countDigits(voucherCode);
-        
-        if (digitCount != REQUIRED_DIGIT_COUNT) {
+        if (!isValidVoucherCode(voucherCode)) {
             return REJECTED_STATUS;
         }
         
         return SUCCESS_STATUS;
+    }
+    
+    // Extract validation logic to a separate method for better testability
+    protected boolean isValidVoucherCode(String voucherCode) {
+        // Check for null, length, and prefix in one go
+        if (isNullOrEmpty(voucherCode) || 
+            voucherCode.length() != VOUCHER_CODE_LENGTH || 
+            !voucherCode.startsWith(VOUCHER_PREFIX)) {
+            return false;
+        }
+        
+        // Check digit count
+        int digitCount = countDigits(voucherCode);
+        return digitCount == REQUIRED_DIGIT_COUNT;
     }
     
     private boolean isNullOrEmpty(String str) {
