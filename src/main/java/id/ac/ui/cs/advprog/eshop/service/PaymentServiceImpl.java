@@ -88,14 +88,16 @@ public class PaymentServiceImpl implements PaymentService {
     }
     
     private String validateBankTransfer(Map<String, String> paymentData) {
+        // Extract bank transfer validation to a dedicated method for better testability
+        return isBankTransferValid(paymentData) ? SUCCESS_STATUS : REJECTED_STATUS;
+    }
+
+    // Protected for testability
+    protected boolean isBankTransferValid(Map<String, String> paymentData) {
         String bankName = paymentData.get(BANK_NAME_KEY);
         String referenceCode = paymentData.get(REFERENCE_CODE_KEY);
         
-        if (isNullOrEmpty(bankName) || isNullOrEmpty(referenceCode)) {
-            return REJECTED_STATUS;
-        }
-        
-        return SUCCESS_STATUS;
+        return !isNullOrEmpty(bankName) && !isNullOrEmpty(referenceCode);
     }
     
     private String validateVoucher(Map<String, String> paymentData) {
@@ -143,8 +145,3 @@ public class PaymentServiceImpl implements PaymentService {
         voucherData.put("voucherCode", "ESHOP1234ABCD567"); 
     }
 }
-
-/////////////////////////
-/// /////////////////////
-/// ///////////////////////////
-/// 
