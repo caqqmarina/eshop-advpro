@@ -98,7 +98,7 @@ class PaymentServiceImplTest {
     
     @Test
     void testAddPayment_Voucher_Success() {
-        voucherData.put("voucherCode", "ESHOP12345678ABC");  // Add an extra character to make it 16 chars
+        voucherData.put("voucherCode", "ESHOP1234ABCD567");  
         when(paymentRepository.save(any(Payment.class))).thenAnswer(i -> i.getArguments()[0]);
         
         Payment result = paymentService.addPayment(order, "Voucher", voucherData);
@@ -111,6 +111,50 @@ class PaymentServiceImplTest {
     @Test
     void testAddPayment_Voucher_Rejected() {
         Payment result = paymentService.addPayment(order, "Voucher", invalidVoucherData);
+
+        assertEquals("REJECTED", result.getStatus());
+        verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
+        verify(paymentRepository).save(any(Payment.class));
+    }
+    
+    @Test
+    void testAddPayment_Voucher_Rejected_TooShort() {
+        voucherData.put("voucherCode", "ESHOP1234ABC567");
+        
+        Payment result = paymentService.addPayment(order, "Voucher", voucherData);
+
+        assertEquals("REJECTED", result.getStatus());
+        verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
+        verify(paymentRepository).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPayment_Voucher_Rejected_WrongPrefix() {
+        voucherData.put("voucherCode", "WRONG1234ABCD567");
+        
+        Payment result = paymentService.addPayment(order, "Voucher", voucherData);
+
+        assertEquals("REJECTED", result.getStatus());
+        verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
+        verify(paymentRepository).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPayment_Voucher_Rejected_NotEnoughDigits() {
+        voucherData.put("voucherCode", "ESHOP123ABCDEF67");
+        
+        Payment result = paymentService.addPayment(order, "Voucher", voucherData);
+
+        assertEquals("REJECTED", result.getStatus());
+        verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
+        verify(paymentRepository).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPayment_Voucher_Rejected_TooManyDigits() {
+        voucherData.put("voucherCode", "ESHOP12345ABCD67");
+        
+        Payment result = paymentService.addPayment(order, "Voucher", voucherData);
 
         assertEquals("REJECTED", result.getStatus());
         verify(orderService).updateStatus(order.getId(), OrderStatus.FAILED.getValue());
