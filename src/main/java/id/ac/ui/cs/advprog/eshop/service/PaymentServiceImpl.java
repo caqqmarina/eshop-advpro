@@ -133,4 +133,9 @@ public class PaymentServiceImpl implements PaymentService {
             orderService.updateStatus(orderId, OrderStatus.FAILED.getValue());
         }
     }
+    
+    public static void main(String[] args) {
+        Map<String, String> voucherData = new HashMap<>();
+        voucherData.put("voucherCode", "ESHOP1234ABCD567"); 
+    }
 }
