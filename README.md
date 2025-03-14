@@ -175,3 +175,52 @@ The current implementation meets the definition of CI/CD for the following reaso
 - **Inflexible Architecture:**
   Failing to adhere to OCP means that even small changes (like adding a new product type) force modifications in existing methods. This can introduce bugs and make it harder to scale the application over time.
 
+# Module 4 Reflections: Test-Driven Development (TDD)
+
+## TDD Workflow Reflection
+
+### Test-Driven Development Effectiveness
+Following Percival's self-reflective questions, my experience with TDD in implementing the Payment feature was enlightening:
+
+#### Was TDD useful for me?
+
+**Strengths of TDD in this project:**
+- The **RED** step helped me clearly define requirements before implementation, especially for the voucher and bank transfer validation rules.
+- The **GREEN** step kept me focused on implementing only what's needed to pass tests.
+- The **REFACTOR** step allowed me to improve code quality after ensuring functionality.
+- Created a safety net that caught several edge cases (like voucher code validation with exactly 8 digits).
+- Tests acted as documentation, clearly showing how components should behave.
+
+**Areas where TDD felt challenging:**
+- Initial test setup took considerable time, especially for components with dependencies.
+- Sometimes found myself modifying tests after implementation when requirements were clarified.
+- Occasionally wrote overly complex tests that tested implementation details rather than behavior.
+
+### What to Improve Next Time
+- Focus more on **behavior-driven tests** rather than implementation details.
+- Create **better test fixtures and helper methods** to reduce test setup code.
+- Practice more **isolated testing** through better mocking strategies.
+- Spend more time **planning the tests** before writing them.
+
+## F.I.R.S.T. Principles Evaluation
+Analyzing my unit tests against the **F.I.R.S.T.** principles:
+
+### **Fast**
+- **Strengths:** Most tests complete in milliseconds, as seen in test reports (e.g., `PaymentServiceImplTest` runs in 0.153s).
+- **Areas to Improve:** Some tests could be optimized further by reducing setup overhead.
+
+### **Independent**
+- **Strengths:** Tests use fresh fixtures and proper mocking.
+- **Areas to Improve:** Some tests depend on specific data configurations that could be refactored for better isolation.
+
+### **Repeatable**
+- **Strengths:** Tests run consistently in the CI/CD pipeline.
+- **Areas to Improve:** Need to ensure tests don't depend on environmental factors like system time.
+
+### **Self-Validating**
+- **Strengths:** All tests have clear assertions that either pass or fail.
+- **Areas to Improve:** Some assertions could be more specific about failure causes.
+
+### **Timely**
+- **Strengths:** Following TDD, wrote tests before implementation.
+- **Areas to Improve:** Sometimes revised tests after implementation, which dilutes the TDD approach.
